@@ -22,45 +22,64 @@ const scholarshipCollection = [
 // Document Object Model Lifecycle Target Execution
 document.addEventListener("DOMContentLoaded", () => {
     // Lucide Icons Render Mapping
-    lucide.createIcons();
+    if (typeof lucide !== 'undefined') {
+        lucide.createIcons();
+    }
     renderQuestionBank();
     renderScholarshipsMatrix();
     initializeCountdownScheduler();
+    // Default dynamic view show
+    switchTab('dashboard');
 });
 
 // Toast System Controller Utility 
 function displayToastAlert(message, type = 'success') {
     const toast = document.getElementById('toast-notification');
     const text = document.getElementById('toast-text');
-    text.innerText = message;
+    if (!toast || !text) return;
     
+    text.innerText = message;
     toast.className = `toast ${type}`;
+    
     setTimeout(() => {
         toast.className = 'toast hidden';
     }, 4000);
 }
 
-// Router View Swapper Engine
+// Router View Swapper Engine (FIXED TAB ROUTING)
 function switchTab(targetTabId) {
     stateManager.activeTab = targetTabId;
     
-    // UI Panels Visually Hide
-    document.querySelectorAll('.tab-view').forEach(view => view.classList.add('hidden'));
-    const targetView = document.getElementById(`view-${targetTabId}`);
-    if (targetView) targetView.classList.remove('hidden');
+    // 1. Hide all views first
+    document.querySelectorAll('.tab-view').forEach(view => {
+        view.classList.add('hidden');
+        view.classList.remove('active');
+    });
     
-    // Navigation Buttons Active Classes Map Fix
+    // 2. Show exact clicked view
+    const targetView = document.getElementById(`view-${targetTabId}`);
+    if (targetView) {
+        targetView.classList.remove('hidden');
+        targetView.classList.add('active');
+    }
+    
+    // 3. Navigation Buttons active status refresh
     document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
     const targetBtn = document.getElementById(`btn-${targetTabId}`);
     if (targetBtn) targetBtn.classList.add('active');
     
-    // Dynamic Header Title Shift
-    document.getElementById('active-tab-title').innerText = targetTabId.replace('-', ' ');
+    // 4. Update Main Title text
+    const titleObj = document.getElementById('active-tab-title');
+    if (titleObj) {
+        titleObj.innerText = targetTabId.replace('-', ' ');
+    }
 }
 
 // Sidebar Mobile Responsive Swapper
 function toggleMobileMenu() {
     const sidebar = document.getElementById('sidebar');
+    if (!sidebar) return;
+    
     if (sidebar.classList.contains('hidden-mobile')) {
         sidebar.className = 'app-sidebar active-mobile';
     } else {
@@ -71,6 +90,7 @@ function toggleMobileMenu() {
 // Target Date Countdown System Logic
 function initializeCountdownScheduler() {
     const clock = document.getElementById('countdown-clock');
+    if (!clock) return;
     
     const targetDates = {
         physics: new Date("March 10, 2027 09:30:00").getTime(),
@@ -79,7 +99,8 @@ function initializeCountdownScheduler() {
     };
 
     setInterval(() => {
-        const subject = document.getElementById('countdown-subject').value;
+        const selectObj = document.getElementById('countdown-subject');
+        const subject = selectObj ? selectObj.value : 'physics';
         const target = targetDates[subject] || targetDates.physics;
         const delta = target - new Date().getTime();
         
@@ -104,9 +125,11 @@ function changeSubjectCountdown() {
 // AI Curation Simulation Module
 function generateAINotesLogic(event) {
     event.preventDefault();
-    const prompt = document.getElementById('ai-prompt').value;
+    const promptObj = document.getElementById('ai-prompt');
     const box = document.getElementById('ai-result');
+    if (!promptObj || !box) return;
     
+    const prompt = promptObj.value;
     displayToastAlert("Curation engine processing data structures...", "success");
     
     setTimeout(() => {
@@ -132,7 +155,10 @@ function renderQuestionBank() {
             </button>
         </div>
     `).join('');
-    lucide.createIcons();
+    
+    if (typeof lucide !== 'undefined') {
+        lucide.createIcons();
+    }
 }
 
 // Render Engine - Active Scholarships Dynamic Matrix
@@ -157,7 +183,8 @@ function renderScholarshipsMatrix() {
 
 // Assessment Interactive Matrix
 function startMockAssessment() {
-    document.getElementById('mock-test-area').classList.remove('hidden');
+    const area = document.getElementById('mock-test-area');
+    if (area) area.classList.remove('hidden');
     displayToastAlert("Assessment platform initialized!");
 }
 
@@ -172,9 +199,13 @@ function answerMockQuestion(isCorrect) {
 // Performance Index SCERT Equation Module
 function computeGPAMetrics(event) {
     event.preventDefault();
-    const obtained = parseFloat(document.getElementById('gpa-obtained').value);
-    const total = parseFloat(document.getElementById('gpa-total').value);
+    const obtainedObj = document.getElementById('gpa-obtained');
+    const totalObj = document.getElementById('gpa-total');
     const output = document.getElementById('gpa-output');
+    if (!obtainedObj || !totalObj || !output) return;
+    
+    const obtained = parseFloat(obtainedObj.value);
+    const total = parseFloat(totalObj.value);
     
     if (obtained > total || total <= 0) {
         displayToastAlert("Data bounds exception mapping parameters", "error");
@@ -194,6 +225,8 @@ function toggleStudentAuth() {
     const avatar = document.getElementById('user-avatar');
     const link = document.getElementById('auth-toggle-link');
     
+    if (!nameDisp || !avatar || !link) return;
+    
     if (stateManager.isStudentLoggedIn) {
         nameDisp.innerText = "Rahul Nair";
         avatar.innerText = "RN";
@@ -212,8 +245,10 @@ function handleSecretClick() {
     stateManager.secretClicksCount++;
     if (stateManager.secretClicksCount >= 5) {
         const badge = document.getElementById('session-badge');
-        badge.innerText = "Operator Room Granted";
-        badge.className = "badge badge-emerald";
+        if (badge) {
+            badge.innerText = "Operator Room Granted";
+            badge.className = "badge badge-emerald";
+        }
         displayToastAlert("🤫 System backdoor unlocked! Admin state injected successfully.");
         stateManager.secretClicksCount = 0;
     }
