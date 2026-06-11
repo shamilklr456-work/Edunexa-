@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edunexa Kerala - Student Learning Portal</title>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div id="toast-notification" class="toast hidden success">
+        <i data-lucide="check-circle" class="icon-sm"></i>
+        <span id="toast-text">Success message processed!</span>
+    </div>
+
+    <header class="mobile-header">
+        <div class="brand-logo" onclick="handleSecretClick()">
+            <i data-lucide="book-open"></i>
+            <span>Edunexa</span>
+        </div>
+        <button onclick="toggleMobileMenu()" class="menu-trigger-btn">
+            <i data-lucide="menu" id="menu-icon"></i>
+        </button>
+    </header>
+
+    <div class="app-layout">
+        <aside id="sidebar" class="app-sidebar hidden-mobile">
+            <div onclick="handleSecretClick()" class="brand-logo-panel">
+                <i data-lucide="book-open" class="logo-icon"></i>
+                <span>Edunexa</span>
+            </div>
+            <nav class="navigation-links">
+                <button onclick="switchTab('dashboard')" class="nav-btn active" id="btn-dashboard">
+                    <i data-lucide="book-open"></i><span>Dashboard</span>
+                </button>
+                <button onclick="switchTab('ai-notes')" class="nav-btn" id="btn-ai-notes">
+                    <i data-lucide="zap"></i><span>AI Notes Gen</span>
+                </button>
+                <button onclick="switchTab('papers')" class="nav-btn" id="btn-papers">
+                    <i data-lucide="file-text"></i><span>Question Papers</span>
+                </button>
+                <button onclick="switchTab('mock-tests')" class="nav-btn" id="btn-mock-tests">
+                    <i data-lucide="play"></i><span>Online Mock Tests</span>
+                </button>
+                <button onclick="switchTab('scholarships')" class="nav-btn" id="btn-scholarships">
+                    <i data-lucide="bell"></i><span>Scholarships</span>
+                </button>
+                <button onclick="switchTab('tools')" class="nav-btn" id="btn-tools">
+                    <i data-lucide="calculator"></i><span>GPA Calculator</span>
+                </button>
+            </nav>
+        </aside>
+
+        <main class="main-workspace">
+            
+            <div class="top-context-bar">
+                <div class="headline-container">
+                    <div class="status-badge-row">
+                        <span id="session-badge" class="badge badge-slate">Student Mode</span>
+                        <span class="subtext-light">Portal Owner: <strong>Edunexa Director</strong></span>
+                    </div>
+                    <h1 id="active-tab-title" class="main-view-title">Dashboard</h1>
+                </div>
+                <div class="user-status-controls">
+                    <span id="premium-tag" class="premium-badge hidden">
+                        <i data-lucide="star" class="icon-xs"></i>Premium Active
+                    </span>
+                    <button onclick="toggleStudentAuth()" id="auth-toggle-link" class="link-btn-underline">Change Student</button>
+                    <div id="user-avatar" class="user-avatar">RN</div>
+                </div>
+            </div>
+
+            <section id="view-dashboard" class="tab-view active">
+                <div class="dashboard-grid">
+                    <div class="card p-6">
+                        <h3 class="card-caption">Welcome Student</h3>
+                        <p id="profile-name-display" class="profile-title">Rahul Nair</p>
+                        <p id="profile-grade-display" class="profile-subtitle">Plus Two Science Student</p>
+                    </div>
+                    <div class="card p-6 col-span-2">
+                        <h3 class="card-caption mb-2">Syllabus Countdown System</h3>
+                        <div class="countdown-row">
+                            <select id="countdown-subject" class="select-input" onchange="changeSubjectCountdown()">
+                                <option value="physics">Plus Two Physics (DHSE Board Exam)</option>
+                                <option value="math">SSLC Mathematics (Kerala State Syllabus)</option>
+                                <option value="chemistry">Plus One Chemistry (DHSE Model Exam)</option>
+                            </select>
+                            <div class="countdown-clock-box" id="countdown-clock">Loading schedules...</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="view-ai-notes" class="tab-view hidden">
+                <div class="card p-6">
+                    <h2 class="section-heading">AI Study Guide Engine</h2>
+                    <p class="description-text mb-4">Instant high-frequency derivation generation mapped directly to Kerala Academic Blueprints.</p>
+                    <form onsubmit="generateAINotesLogic(event)" class="form-vertical">
+                        <input id="ai-prompt" type="text" placeholder="Enter topic name (e.g. Electromagnetic Induction)" class="text-input" required>
+                        <button type="submit" id="ai-submit-btn" class="btn btn-primary">Generate Notes Blueprint</button>
+                    </form>
+                    <pre id="ai-result" class="pre-terminal hidden"></pre>
+                </div>
+            </section>
+
+            <section id="view-papers" class="tab-view hidden">
+                <div class="card p-6">
+                    <h2 class="section-heading">Official Kerala Repository Blueprints</h2>
+                    <div class="filter-row mb-4">
+                        <input type="text" id="wiki-search" placeholder="Filter topics (e.g. Progression)" class="text-input" oninput="filterSyllabusWiki()">
+                    </div>
+                    <div id="papers-list-container" class="stack-list">
+                        </div>
+                </div>
+            </section>
+
+            <section id="view-mock-tests" class="tab-view hidden">
+                <div class="card p-6">
+                    <h2 class="section-heading">Interactive Performance Tests</h2>
+                    <div class="mock-exam-selector-box p-4">
+                        <p class="font-bold text-sm">SSLC Mathematics Speed Mock Test</p>
+                        <p class="description-text">Standard duration simulation test tracking basic scoring matrices.</p>
+                        <button onclick="startMockAssessment()" class="btn btn-primary mt-3">Start Assessment</button>
+                    </div>
+                    <div id="mock-test-area" class="hidden mock-assessment-workspace">
+                        <p class="question-title" id="mock-question-text">Question 1: What is the common difference of the sequence: 5, 12, 19, 26...?</p>
+                        <div class="options-button-row">
+                            <button onclick="answerMockQuestion(true)" class="btn btn-outline">Option: 7</button>
+                            <button onclick="answerMockQuestion(false)" class="btn btn-outline">Option: 5</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="view-scholarships" class="tab-view hidden">
+                <div class="card p-6">
+                    <h2 class="section-heading">Active Meritorious Schemes</h2>
+                    <p class="description-text mb-4">Scholarships with real-time deadline validation against the current platform interface system.</p>
+                    <div class="scholarships-grid" id="scholarship-container">
+                        </div>
+                </div>
+            </section>
+
+            <section id="view-tools" class="tab-view hidden">
+                <div class="card p-6">
+                    <h2 class="section-heading">SCERT Weightage GPA Module</h2>
+                    <form onsubmit="computeGPAMetrics(event)" class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="input-label">Obtained Weight Score</label>
+                            <input id="gpa-obtained" type="number" step="any" class="text-input mt-1" required>
+                        </div>
+                        <div>
+                            <label class="input-label">Total Scale Weight</label>
+                            <input id="gpa-total" type="number" step="any" class="text-input mt-1" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary col-span-2">Calculate Performance Index</button>
+                    </form>
+                    <div id="gpa-output" class="hidden calculation-output-alert"></div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
